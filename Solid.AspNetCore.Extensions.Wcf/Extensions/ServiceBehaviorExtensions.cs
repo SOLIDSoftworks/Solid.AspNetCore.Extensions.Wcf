@@ -10,8 +10,17 @@ using System.Threading.Tasks;
 
 namespace Solid.AspNetCore.Extensions.Wcf
 {
+    /// <summary>
+    /// Extension methods for IServiceHostBuilder&lt;TService&gt;
+    /// </summary>
     public static class ServiceBehaviorExtensions
     {
+        /// <summary>
+        /// Adds service metadata behavior to a service host
+        /// </summary>
+        /// <typeparam name="TService">The service implementation type</typeparam>
+        /// <param name="configuration">The service host configuration</param>
+        /// <returns>The service host configuration</returns>
         public static IServiceHostBuilder<TService> WithServiceMetadataBehavior<TService>(this IServiceHostBuilder<TService> configuration)
         {
             return configuration.WithServiceMetadataBehavior(behavior =>
@@ -21,6 +30,13 @@ namespace Solid.AspNetCore.Extensions.Wcf
             });
         }
 
+        /// <summary>
+        /// Adds service metadata behavior to a service host
+        /// </summary>
+        /// <typeparam name="TService">The service implementation type</typeparam>
+        /// <param name="configuration">The service host configuration</param>
+        /// <param name="action">Configuration action for the service metadata behavior</param>
+        /// <returns>The service host configuration</returns>
         public static IServiceHostBuilder<TService> WithServiceMetadataBehavior<TService>(this IServiceHostBuilder<TService> configuration, Action<ServiceMetadataBehavior> action)
         {
             var behavior = new ServiceMetadataBehavior();
@@ -28,6 +44,13 @@ namespace Solid.AspNetCore.Extensions.Wcf
             return configuration.WithServiceBehavior(behavior);
         }
 
+        /// <summary>
+        /// Add service behavior to a service host
+        /// </summary>
+        /// <typeparam name="TService">The service implementation type</typeparam>
+        /// <param name="configuration">The service host configuration</param>
+        /// <param name="behavior">The service behavior</param>
+        /// <returns>The service host configuration</returns>
         public static IServiceHostBuilder<TService> WithServiceBehavior<TService>(this IServiceHostBuilder<TService> configuration, IServiceBehavior behavior)
         {
             var provider = new ServiceBehaviorProvider<TService>(behavior);

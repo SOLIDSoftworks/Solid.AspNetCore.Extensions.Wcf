@@ -12,13 +12,32 @@ using Solid.AspNetCore.Extensions.Wcf.Builders;
 
 namespace Solid.AspNetCore.Extensions.Wcf
 {
+    /// <summary>
+    /// Extensions methods for IApplicationBuilder
+    /// </summary>
     public static class ApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Adds a contract endpoint to a service host for a service implementation
+        /// </summary>
+        /// <typeparam name="TService">The service implementation type</typeparam>
+        /// <typeparam name="TContract">The service contract</typeparam>
+        /// <param name="builder">The application builder</param>
+        /// <param name="path">The endpoint for the service host</param>
+        /// <returns>The application builder</returns>
         public static IApplicationBuilder UseWcfService<TService, TContract>(this IApplicationBuilder builder, PathString path)
         {
             return builder.UseWcfService<TService>(path, b => b.AddServiceEndpoint<TContract>());
         }
 
+        /// <summary>
+        /// Adds one or more contract endpoints to a service host for a service implementation
+        /// </summary>
+        /// <typeparam name="TService">The service implementation type</typeparam>
+        /// <param name="builder">The application builder</param>
+        /// <param name="path">The endpoint for the service host</param>
+        /// <param name="action">Configuration action the adds endpoints</param>
+        /// <returns>The application builder</returns>
         public static IApplicationBuilder UseWcfService<TService>(this IApplicationBuilder builder, PathString path, Action<IEndpointBuilder<TService>> action)
         {
             var endpoints = builder.ApplicationServices.GetService<EndpointBuilder<TService>>();

@@ -25,9 +25,9 @@ namespace Solid.AspNetCore.Extensions.Wcf
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the specified service implementation to the service collection and creates a service host for the specified service
+        /// Adds the specified service implementation to the service collection and creates a service host for the specified service.
         /// </summary>
-        /// <typeparam name="TService">The service implementation</typeparam>
+        /// <typeparam name="TService">The service implementation type</typeparam>
         /// <param name="services">The service collection</param>
         /// <param name="action">Extra configuration actions</param>
         /// <returns>The service collection</returns>
@@ -45,6 +45,12 @@ namespace Solid.AspNetCore.Extensions.Wcf
             return services;
         }
 
+        /// <summary>
+        /// Adds the specified service implementation to the service collection and creates a service host with metadata for the specified service.
+        /// </summary>
+        /// <typeparam name="TService">The service implementation type</typeparam>
+        /// <param name="services">The service collection</param>
+        /// <returns>The service collection</returns>
         public static IServiceCollection AddWcfServiceWithMetadata<TService>(this IServiceCollection services)
             where TService : class
         {
