@@ -56,11 +56,60 @@ namespace Solid.AspNetCore.Extensions.Wcf
         {
             return services.AddWcfService<TService>(builder => builder.WithServiceMetadataBehavior());
         }
-        
+
+        /// <summary>
+        /// Adds a default binding type for service endpoints
+        /// </summary>
+        /// <typeparam name="TBinding">The default binding type</typeparam>
+        /// <param name="services">The service collection</param>
+        /// <returns>The service collection</returns>
+        public static IServiceCollection AddDefaultBinding<TBinding>(this IServiceCollection services)
+            where TBinding : Binding
+        {
+            // TODO: User a default binding provider
+            var description = services.FirstOrDefault(s => s.ServiceType == typeof(Binding));
+            if (description != null)
+                services.Remove(description);
+            return services.AddTransient<Binding, TBinding>();
+        }
+
+        /// <summary>
+        /// Adds a default binding factory for service endpoints
+        /// </summary>
+        /// <typeparam name="TBinding">The default binding type</typeparam>
+        /// <param name="services">The service collection</param>
+        /// <param name="factory">The factory method that creates the binding</param>
+        /// <returns>The service collection</returns>
+        public static IServiceCollection AddDefaultBinding<TBinding>(this IServiceCollection services, Func<IServiceProvider, TBinding> factory)
+            where TBinding : Binding
+        {
+            // TODO: User a default binding provider
+            var description = services.FirstOrDefault(s => s.ServiceType == typeof(Binding));
+            if (description != null)
+                services.Remove(description);
+            return services.AddTransient<Binding>(factory);
+        }
+
+        /// <summary>
+        /// Adds a singleton default binding for service endpoints
+        /// </summary>
+        /// <param name="services">The service collection</param>
+        /// <param name="binding">The default binding instance</param>
+        /// <returns>The service collection</returns>
+        public static IServiceCollection AddDefaultBinding(this IServiceCollection services, Binding binding)
+        {
+            // TODO: User a default binding provider
+            var description = services.FirstOrDefault(s => s.ServiceType == typeof(Binding));
+            if (description != null)
+                services.Remove(description);
+            return services.AddSingleton<Binding>(binding);
+        }
+
         private static IServiceCollection TryAddServiceModel(this IServiceCollection services)
         {
             var comparer = new ServiceDescriptorImplementationTypeEqualityComparer();
 
+            // TODO: User a default binding provider
             services.TryAddTransient<Binding, BasicHttpBinding>();
             services.TryAddSingleton<IServiceHostFactory, ServiceHostFactory>();
             services.TryAddSingleton<IBaseAddressFactory, BaseAddressFactory>();
