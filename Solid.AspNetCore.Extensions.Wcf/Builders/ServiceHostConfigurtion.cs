@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Builders
 {
-    internal class ServiceHostBuilder<TService>: IServiceHostBuilder<TService>
+    internal class ServiceHostConfigurtion<TService>: IServiceHostConfiguration<TService>
     {
-        internal ServiceHostBuilder(IServiceCollection services)
+        internal ServiceHostConfigurtion(IServiceCollection services)
         {
             Services = services;
         }

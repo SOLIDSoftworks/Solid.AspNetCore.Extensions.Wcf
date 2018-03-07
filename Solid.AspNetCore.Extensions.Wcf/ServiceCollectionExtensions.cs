@@ -31,7 +31,7 @@ namespace Solid.AspNetCore.Extensions.Wcf
         /// <param name="services">The service collection</param>
         /// <param name="action">Extra configuration actions</param>
         /// <returns>The service collection</returns>
-        public static IServiceCollection AddWcfService<TService>(this IServiceCollection services, Action<IServiceHostBuilder<TService>> action)
+        public static IServiceCollection AddWcfService<TService>(this IServiceCollection services, Action<IServiceHostConfiguration<TService>> action)
             where TService : class
         {
             var type = typeof(TService);
@@ -40,7 +40,7 @@ namespace Solid.AspNetCore.Extensions.Wcf
                 .AddSingleton(p => p.GetService<IServiceHostFactory>().Create<TService>())
                 .Add(ServiceDescriptor.Describe(type, type, type.GetServiceLifetime()));
 
-            var builder = new ServiceHostBuilder<TService>(services);
+            var builder = new ServiceHostConfigurtion<TService>(services);
             action(builder);
             return services;
         }

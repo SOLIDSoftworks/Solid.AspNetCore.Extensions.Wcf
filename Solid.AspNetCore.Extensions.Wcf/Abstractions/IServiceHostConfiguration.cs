@@ -11,7 +11,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Abstractions
     /// The service host configuration
     /// </summary>
     /// <typeparam name="TService">The service implementation type</typeparam>
-    public interface IServiceHostBuilder<TService>
+    public interface IServiceHostConfiguration<TService>
     {
         /// <summary>
         /// The application service collection

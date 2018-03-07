@@ -21,7 +21,7 @@ namespace Solid.AspNetCore.Extensions.Wcf
         /// <typeparam name="TService">The service implementation type</typeparam>
         /// <param name="configuration">The service host configuration</param>
         /// <returns>The service host configuration</returns>
-        public static IServiceHostBuilder<TService> WithServiceMetadataBehavior<TService>(this IServiceHostBuilder<TService> configuration)
+        public static IServiceHostConfiguration<TService> WithServiceMetadataBehavior<TService>(this IServiceHostConfiguration<TService> configuration)
         {
             return configuration.WithServiceMetadataBehavior(behavior =>
             {
@@ -37,7 +37,7 @@ namespace Solid.AspNetCore.Extensions.Wcf
         /// <param name="configuration">The service host configuration</param>
         /// <param name="action">Configuration action for the service metadata behavior</param>
         /// <returns>The service host configuration</returns>
-        public static IServiceHostBuilder<TService> WithServiceMetadataBehavior<TService>(this IServiceHostBuilder<TService> configuration, Action<ServiceMetadataBehavior> action)
+        public static IServiceHostConfiguration<TService> WithServiceMetadataBehavior<TService>(this IServiceHostConfiguration<TService> configuration, Action<ServiceMetadataBehavior> action)
         {
             var behavior = new ServiceMetadataBehavior();
             action(behavior);
@@ -51,7 +51,7 @@ namespace Solid.AspNetCore.Extensions.Wcf
         /// <param name="configuration">The service host configuration</param>
         /// <param name="behavior">The service behavior</param>
         /// <returns>The service host configuration</returns>
-        public static IServiceHostBuilder<TService> WithServiceBehavior<TService>(this IServiceHostBuilder<TService> configuration, IServiceBehavior behavior)
+        public static IServiceHostConfiguration<TService> WithServiceBehavior<TService>(this IServiceHostConfiguration<TService> configuration, IServiceBehavior behavior)
         {
             var provider = new ServiceBehaviorProvider<TService>(behavior);
             configuration.Services.AddSingleton<ServiceBehaviorProvider<TService>>(provider);
