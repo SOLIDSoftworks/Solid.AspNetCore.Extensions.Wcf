@@ -6,4 +6,4 @@ Solid.AspNetCore.Extensions.Wcf is a library for hosting WCF services in AspNetC
 * [Solid.AspNetCore.Extensions.Wcf](https://www.nuget.org/packages/Solid.AspNetCore.Extensions.Wcf)
 
 ## Usage
-Read how to use this library in [the wiki](https://github.com/SOLIDSoftworks/Solid.AspNetCore.Extensions.Wcf/wiki) or on [our blog](#).
+Read how to use this library in [the wiki](https://github.com/SOLIDSoftworks/Solid.AspNetCore.Extensions.Wcf/wiki) or on [our blog](https://www.solidsoft.works/2018/03/07/hosting-a-wcf-service-from-an-aspnetcore-application/).
