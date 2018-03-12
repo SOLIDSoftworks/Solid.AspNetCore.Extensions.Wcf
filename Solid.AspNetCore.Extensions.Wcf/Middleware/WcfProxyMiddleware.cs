@@ -13,18 +13,19 @@ namespace Solid.AspNetCore.Extensions.Wcf.Middleware
 {
     internal class WcfProxyMiddleware<TService>
     {
-        private Uri _baseAddress;
+        private IEnumerable<Uri> _baseAddresses;
 
         public WcfProxyMiddleware(RequestDelegate next, AspNetCoreServiceHost<TService> host, IBaseAddressFactory addressFactory, PathString path)
         {
-            _baseAddress = addressFactory.Create(path);
-            host.Initialize(_baseAddress);
+            _baseAddresses = addressFactory.Create(path);
+            host.Initialize(_baseAddresses);
             host.Open();
         }
 
         public async Task Invoke(HttpContext context)
         {
-            var response = await context.ForwardToAsync(_baseAddress, context.RequestAborted);
+            var baseAddress = _baseAddresses.First();
+            var response = await context.ForwardToAsync(baseAddress, context.RequestAborted);
             await context.RespondWithAsync(response, context.RequestAborted);
         }
     }    

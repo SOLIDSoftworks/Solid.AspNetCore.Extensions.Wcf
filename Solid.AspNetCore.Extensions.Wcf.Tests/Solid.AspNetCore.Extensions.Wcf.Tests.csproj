@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Solid.AspNetCore.Extensions.Wcf\Solid.AspNetCore.Extensions.Wcf.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.ServiceModel.Web" />
+  </ItemGroup>
+
 </Project>

@@ -16,12 +16,16 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests.Host
         {
             services.AddWcfServiceWithMetadata<PerCallService>();
             services.AddWcfServiceWithMetadata<SingletonService>();
+            services.AddWcfServiceWithMetadata<ProxiedService>();
+            //services.AddWcfServiceWithMetadata<DirectService>();
         }
 
         public void Configure(IApplicationBuilder builder)
         {
             builder.UseWcfService<PerCallService, IInstanceTestService>("/percall");
             builder.UseWcfService<SingletonService, IInstanceTestService>("/singleton");
+            builder.UseWcfService<ProxiedService, IProxiedService>("/proxied");
+            //builder.UseWcfService<DirectService, IDirectService>("/direct", true);
         }
     }
 }

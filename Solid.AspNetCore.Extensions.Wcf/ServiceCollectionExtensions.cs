@@ -29,6 +29,18 @@ namespace Solid.AspNetCore.Extensions.Wcf
         /// </summary>
         /// <typeparam name="TService">The service implementation type</typeparam>
         /// <param name="services">The service collection</param>
+        /// <returns>The service collection</returns>
+        public static IServiceCollection AddWcfService<TService>(this IServiceCollection services)
+            where TService : class
+        {
+            return services.AddWcfService<TService>(_ => { });
+        }
+
+        /// <summary>
+        /// Adds the specified service implementation to the service collection and creates a service host for the specified service.
+        /// </summary>
+        /// <typeparam name="TService">The service implementation type</typeparam>
+        /// <param name="services">The service collection</param>
         /// <param name="action">Extra configuration actions</param>
         /// <returns>The service collection</returns>
         public static IServiceCollection AddWcfService<TService>(this IServiceCollection services, Action<IServiceHostConfiguration<TService>> action)
@@ -38,6 +50,8 @@ namespace Solid.AspNetCore.Extensions.Wcf
             services
                 .TryAddServiceModel()
                 .AddSingleton(p => p.GetService<IServiceHostFactory>().Create<TService>())
+                .AddSingleton<AspNetCoreServiceHost>(p => p.GetService<AspNetCoreServiceHost<TService>>())
+                .AddSingleton<ServiceHost>(p => p.GetService<AspNetCoreServiceHost<TService>>())
                 .Add(ServiceDescriptor.Describe(type, type, type.GetServiceLifetime()));
 
             var builder = new ServiceHostConfigurtion<TService>(services);

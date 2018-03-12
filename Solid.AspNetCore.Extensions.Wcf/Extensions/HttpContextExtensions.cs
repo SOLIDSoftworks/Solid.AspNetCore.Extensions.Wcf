@@ -24,6 +24,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Extensions
                 request.Content = content;
 
             request.Headers.Add("Host", context.Request.Host.Value);
+            request.Headers.Add("X-AspNetCore-Trace-Id", context.TraceIdentifier);
             foreach (var header in context.Request.Headers)
             {
                 if (!request.Headers.TryAddWithoutValidation(header.Key, header.Value.AsEnumerable()))

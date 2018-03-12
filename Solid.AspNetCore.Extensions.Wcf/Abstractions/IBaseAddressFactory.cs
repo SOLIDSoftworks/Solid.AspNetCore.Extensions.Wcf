@@ -8,6 +8,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Abstractions
 {
     internal interface IBaseAddressFactory
     {
-        Uri Create(string path);
+        IEnumerable<Uri> Create(string path);
+        IEnumerable<Uri> Create(string path, bool direct);
     }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel
 {
-    internal class AspNetCoreServiceHost<TService> : ServiceHost
+    internal class AspNetCoreServiceHost<TService> : AspNetCoreServiceHost
     {
         private List<ServiceEndpointDescription> _endpoints = new List<ServiceEndpointDescription>();
         private TService _instance;
@@ -28,15 +28,18 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel
         public event EventHandler DescriptionInitializing;
         public event EventHandler DescriptionInitialized;
 
-        public void Initialize(Uri baseAddress)
+        public override void Initialize(IEnumerable<Uri> baseAddresses)
         {
             if (DescriptionInitializing != null)
                 DescriptionInitializing(this, EventArgs.Empty);
 
-            if (_instance == null)
-                InitializeDescription(typeof(TService), new UriSchemeKeyedCollection(baseAddress));
-            else
-                InitializeDescription(_instance, new UriSchemeKeyedCollection(baseAddress));
+            foreach (var baseAddress in baseAddresses)
+            {
+                if (_instance == null)
+                    InitializeDescription(typeof(TService), new UriSchemeKeyedCollection(baseAddress));
+                else
+                    InitializeDescription(_instance, new UriSchemeKeyedCollection(baseAddress));
+            }
 
             if (DescriptionInitialized != null)
                 DescriptionInitialized(this, EventArgs.Empty);
@@ -54,5 +57,10 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel
                 Path = path
             });
         }        
+    }
+
+    internal abstract class AspNetCoreServiceHost : ServiceHost
+    {
+        public abstract void Initialize(IEnumerable<Uri> baseAddresses);
     }
 }
