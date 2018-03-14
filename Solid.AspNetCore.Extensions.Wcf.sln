@@ -13,11 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Solid.AspNetCore.Extensions.Wcf.Tests", "Solid.AspNetCore.Extensions.Wcf.Tests\Solid.AspNetCore.Extensions.Wcf.Tests.csproj", "{5FD65B58-E0CB-41DD-B94B-7B62DB57862F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Solid.AspNetCore.Extensions.Wcf.Tests", "Solid.AspNetCore.Extensions.Wcf.Tests\Solid.AspNetCore.Extensions.Wcf.Tests.csproj", "{5FD65B58-E0CB-41DD-B94B-7B62DB57862F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{B1B6E5FC-684F-4A8C-B3D4-F323AF4EC9EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple", "Samples\Simple\Simple.csproj", "{B2EF3BA9-E2A7-479B-A3CF-A4E6D9B59124}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple", "Samples\Simple\Simple.csproj", "{B2EF3BA9-E2A7-479B-A3CF-A4E6D9B59124}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
