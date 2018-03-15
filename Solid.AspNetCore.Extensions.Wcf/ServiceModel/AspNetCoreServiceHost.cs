@@ -25,14 +25,10 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel
         {
         }
 
-        public event EventHandler DescriptionInitializing;
-        public event EventHandler DescriptionInitialized;
+        public event EventHandler Initializing;
 
         public override void Initialize(IEnumerable<Uri> baseAddresses)
         {
-            if (DescriptionInitializing != null)
-                DescriptionInitializing(this, EventArgs.Empty);
-
             foreach (var baseAddress in baseAddresses)
             {
                 if (_instance == null)
@@ -40,12 +36,6 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel
                 else
                     InitializeDescription(_instance, new UriSchemeKeyedCollection(baseAddress));
             }
-
-            if (DescriptionInitialized != null)
-                DescriptionInitialized(this, EventArgs.Empty);
-
-            foreach (var endpoint in _endpoints)
-                AddServiceEndpoint(endpoint.Contract, endpoint.Binding, endpoint.Path);
         }
 
         public void AddEndpoint<TContract>(Binding binding, string path)
@@ -56,7 +46,16 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel
                 Binding = binding, 
                 Path = path
             });
-        }        
+        }
+
+        protected override void InitializeRuntime()
+        {
+            if (Initializing != null)
+                Initializing(this, EventArgs.Empty);
+            foreach (var endpoint in _endpoints)
+                AddServiceEndpoint(endpoint.Contract, endpoint.Binding, endpoint.Path);
+            base.InitializeRuntime();
+        }
     }
 
     internal abstract class AspNetCoreServiceHost : ServiceHost

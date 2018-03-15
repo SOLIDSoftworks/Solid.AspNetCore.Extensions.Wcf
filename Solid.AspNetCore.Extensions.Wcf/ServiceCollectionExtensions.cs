@@ -128,6 +128,7 @@ namespace Solid.AspNetCore.Extensions.Wcf
             services.TryAddSingleton<IBaseAddressFactory, BaseAddressFactory>();
             services.TryAddTransient<IServiceBehavior, AspNetCoreInstanceProviderBehavior>(comparer);
             services.TryAddTransient<IServiceBehavior, UseRequestHeadersForMetadataAddressBehavior>(comparer);
+            services.TryAddTransient<IServiceBehavior, MatchAnyAddressServiceBehavior>(comparer);
             services.TryAddSingleton(typeof(EndpointBuilder<>));
 
             return services;

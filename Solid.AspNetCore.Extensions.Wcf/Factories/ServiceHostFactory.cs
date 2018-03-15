@@ -31,41 +31,35 @@ namespace Solid.AspNetCore.Extensions.Wcf.Factories
             else
                 host = new AspNetCoreServiceHost<TService>();
 
-            AddGlobalBehaviors(host);
-            AddInstanceBehaviors(host);
-            //EnsureSingleInstanceContextMode(host);
+            host.Initializing += AddGlobalBehaviors;
+            host.Initializing += (sender, args) => AddInstanceBehaviors<TService>(sender, args);
 
             return host;
         }
 
-        private void AddGlobalBehaviors<TService>(AspNetCoreServiceHost<TService> host)
+        private void AddGlobalBehaviors(object sender, EventArgs args)
         {
-            host.DescriptionInitialized += (sender, args) =>
-            {
-                var behaviors = _provider.GetServices<IServiceBehavior>();
-                foreach (var behavior in behaviors)
-                    host.Description.Behaviors.Add(behavior);
-            };
+            var host = sender as ServiceHost;
+            var behaviors = _provider.GetServices<IServiceBehavior>().ToArray();
+            AddBehaviorsToHost(host, behaviors);
         }
 
-        private void AddInstanceBehaviors<TService>(AspNetCoreServiceHost<TService> host)
+        private void AddInstanceBehaviors<TService>(object sender, EventArgs args)
         {
-            host.DescriptionInitialized += (sender, args) =>
-            {
-                var behaviorProviders = _provider.GetServices<ServiceBehaviorProvider<TService>>();
-                foreach (var provider in behaviorProviders)
-                    host.Description.Behaviors.Add(provider.Behavior);
-            };
+            var host = sender as ServiceHost;
+            var behaviors = _provider.GetServices<ServiceBehaviorProvider<TService>>().Select(p => p.Behavior).ToArray();
+            AddBehaviorsToHost(host, behaviors);
         }
 
-        private void EnsureSingleInstanceContextMode<TService>(AspNetCoreServiceHost<TService> host)
+        private void AddBehaviorsToHost(ServiceHost host, IServiceBehavior[] behaviors)
         {
-            host.DescriptionInitialized += (sender, args) =>
+            foreach (var behavior in behaviors)
             {
-                var behaviors = host.Description.Behaviors.OfType<ServiceBehaviorAttribute>().Where(b => b.InstanceContextMode != InstanceContextMode.Single);
-                foreach (var behavior in behaviors)
-                    behavior.InstanceContextMode = InstanceContextMode.Single;
-            };
+                if (typeof(ServiceCredentials).IsAssignableFrom(behavior.GetType()))
+                    host.Description.Behaviors.Remove(typeof(ServiceCredentials));
+
+                host.Description.Behaviors.Add(behavior);
+            }
         }
     }
 }
