@@ -6,14 +6,14 @@ using Xunit;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Tests
 {
-    public class InstanceTests : IClassFixture<HttpTestingServerFixture>
+    public class InstanceTests : IClassFixture<InstanceTestFixture>
     {
-        public InstanceTests(HttpTestingServerFixture fixture)
+        public InstanceTests(InstanceTestFixture fixture)
         {
             _fixture = fixture;
         }
 
-        private HttpTestingServerFixture _fixture;
+        private InstanceTestFixture _fixture;
 
         public TestingServer TestingServer => _fixture.TestingServer;
 

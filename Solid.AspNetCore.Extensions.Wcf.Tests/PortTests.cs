@@ -8,11 +8,11 @@ using Xunit;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Tests
 {
-    public class PortTests : IClassFixture<HttpTestingServerFixture>
+    public class PortTests : IClassFixture<PortTestFixture>
     {
-        private HttpTestingServerFixture _fixture;
+        private PortTestFixture _fixture;
 
-        public PortTests(HttpTestingServerFixture fixture)
+        public PortTests(PortTestFixture fixture)
         {
             _fixture = fixture;
         }
