@@ -76,6 +76,28 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel
                 AddServiceEndpoint(endpoint.Contract, endpoint.Binding, endpoint.Path);
             base.InitializeRuntime();
         }
+
+        private string Sanitize(string relative)
+        {
+            while (relative.StartsWith("/"))
+                relative = relative.Substring(1);
+            return relative;
+        }
+
+        private string GetAbsolute(string relative)
+        {
+            while (relative.StartsWith("/"))
+                relative = relative.Substring(1);
+            var baseAddress = BaseAddresses.First().ToString();
+            if (string.IsNullOrEmpty(relative))
+                return baseAddress;
+
+            if (!baseAddress.EndsWith("/"))
+                baseAddress = baseAddress + "/";
+            var baseUri = new Uri(baseAddress);
+            var absolute = new Uri(baseUri, relative);
+            return absolute.ToString();
+        }
     }
 
     internal abstract class AspNetCoreServiceHost : ServiceHost
