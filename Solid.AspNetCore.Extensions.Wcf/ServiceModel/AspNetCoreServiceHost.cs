@@ -43,9 +43,29 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel
             _endpoints.Add(new ServiceEndpointDescription
             {
                 Contract = typeof(TContract),
-                Binding = binding, 
+                Binding = SanitizeBinding(binding), 
                 Path = path
             });
+        }
+
+        private Binding SanitizeBinding(Binding dirty)
+        {
+            var custom = dirty as CustomBinding;
+            if (custom == null)
+                custom = new CustomBinding(dirty);
+            
+            var security = custom.Elements.OfType<SecurityBindingElement>();
+            foreach (var element in security)
+                element.AllowInsecureTransport = true;
+
+            var https = custom.Elements.OfType<TransportBindingElement>().Where(e => e.Scheme == "https").FirstOrDefault();
+            if (https != null)
+            {
+                var http = new HttpTransportBindingElement();
+                custom.Elements.Remove(https);
+                custom.Elements.Add(http);
+            }
+            return custom;
         }
 
         protected override void InitializeRuntime()
