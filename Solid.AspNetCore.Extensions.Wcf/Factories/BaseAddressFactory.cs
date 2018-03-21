@@ -31,6 +31,8 @@ namespace Solid.AspNetCore.Extensions.Wcf.Factories
                 return GetHostAddresses().Select(u => new Uri(u, path));
 
             var host = new Uri($"http://localhost:{GetFreePort()}");
+            if (!path.EndsWith("/"))
+                path = path + "/";
             return new[] { new Uri(host, path) };
         }
 

@@ -42,7 +42,13 @@ namespace Solid.AspNetCore.Extensions.Wcf
         {
             var endpoints = builder.ApplicationServices.GetService<EndpointBuilder<TService>>();
             action(endpoints);
-            return builder.MapWhen(context => context.Request.Path.StartsWithSegments(path), b => b.UseMiddleware<WcfProxyMiddleware<TService>>(path));
+
+            return builder.UseMiddleware<WcfProxyMiddleware<TService>>(path);
+
+
+            //return builder.MapWhen(context => 
+            //    context.Request.Path.StartsWithSegments(path), 
+            //    b => b.UseMiddleware<WcfProxyMiddleware<TService>>(path));
         }
     }
 }

@@ -24,7 +24,16 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests
             var value = service.Echo(expected);
             Assert.Equal(expected, value);
         }
-        
+
+        [Fact]
+        public void ShouldEchoUsingRedirectedService()
+        {
+            var service = _fixture.GetRedirectedEchoService();
+            var expected = Guid.NewGuid().ToString();
+            var value = service.Echo(expected);
+            Assert.Equal(expected, value);
+        }
+
         [Fact]
         public void ShouldIncrement()
         {

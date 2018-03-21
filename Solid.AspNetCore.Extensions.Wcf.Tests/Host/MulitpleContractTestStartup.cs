@@ -19,7 +19,14 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests.Host
 
         public void Configure(IApplicationBuilder builder)
         {
-            builder.UseWcfService<MultipleContract>("/multiple", b => b.AddServiceEndpoint<IEchoContract>("/echo").AddServiceEndpoint<ICounterContract>("counter"));
+            builder
+                .Use(async (context, next) =>
+                {
+                    if(context.Request.Path.StartsWithSegments("/replaceecho"))
+                        context.Request.Path = "/multiple/echo";
+                    await next();
+                })
+                .UseWcfService<MultipleContract>("/multiple", b => b.AddServiceEndpoint<IEchoContract>("/echo").AddServiceEndpoint<ICounterContract>("counter"));
         }
     }
 }

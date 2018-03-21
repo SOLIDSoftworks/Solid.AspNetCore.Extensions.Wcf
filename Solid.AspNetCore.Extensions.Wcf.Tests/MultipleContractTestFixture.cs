@@ -45,6 +45,26 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests
             return _echo;
         }
 
+        public IEchoContract GetRedirectedEchoService()
+        {
+            if (_echo == null)
+            {
+                var url = new Uri(TestingServer.BaseAddress, "replaceecho");
+                var binding = new BasicHttpBinding();
+                var endpoint = new EndpointAddress(url);
+                var factory = new ChannelFactory<IEchoContract>(binding, endpoint);
+                var client = factory.CreateChannel();
+                _echo = client;
+
+                var channel = client as ICommunicationObject;
+                channel.Closed += (sender, args) =>
+                {
+                    _echo = null;
+                };
+            }
+            return _echo;
+        }
+
         public ICounterContract GetCounterService()
         {
             if (_counter == null)

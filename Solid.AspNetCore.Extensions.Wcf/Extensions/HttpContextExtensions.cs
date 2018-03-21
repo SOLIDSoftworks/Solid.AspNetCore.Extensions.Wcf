@@ -17,7 +17,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Extensions
 
         public static async Task<HttpResponseMessage> ForwardToAsync(this HttpContext context, Uri url, CancellationToken cancellationToken)
         {
-            var request = new HttpRequestMessage(new HttpMethod(context.Request.Method), new Uri(url, context.Request.Path + context.Request.QueryString));
+            var request = new HttpRequestMessage(new HttpMethod(context.Request.Method), url);
 
             var content = await context.GetHttpRequestContentAsync();
             if (content != null)
