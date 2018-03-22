@@ -17,14 +17,14 @@ namespace Solid.AspNetCore.Extensions.Wcf.Middleware
         private PathString _path;
         private IEnumerable<Uri> _baseAddresses;
 
-        public WcfProxyMiddleware(RequestDelegate next, AspNetCoreServiceHost<TService> host, IBaseAddressFactory addressFactory, PathString path)
+        public WcfProxyMiddleware(RequestDelegate next, IServiceHostProvider<TService> provider, PathString path)
         {
             _next = next;
             _path = path;
 
-            _baseAddresses = addressFactory.Create(path);
-            host.Initialize(_baseAddresses);
+            var host = provider.Host;
             host.Open();
+            _baseAddresses = host.BaseAddresses;
         }
 
         public async Task Invoke(HttpContext context)

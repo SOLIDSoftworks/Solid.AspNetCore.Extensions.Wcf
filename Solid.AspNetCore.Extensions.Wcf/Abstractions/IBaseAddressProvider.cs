@@ -1,15 +1,15 @@
-﻿using Solid.AspNetCore.Extensions.Wcf.ServiceModel;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Abstractions
 {
-    internal interface IServiceHostFactory
+    internal interface IBaseAddressProvider
     {
-        AspNetCoreServiceHost<TService> Create<TService>();
+        void AddBaseAddressFor<TService>(PathString path);
+        Uri[] GetBaseAddressesFor<TService>();
     }
 }

@@ -40,15 +40,13 @@ namespace Solid.AspNetCore.Extensions.Wcf
         /// <returns>The application builder</returns>
         public static IApplicationBuilder UseWcfService<TService>(this IApplicationBuilder builder, PathString path, Action<IEndpointBuilder<TService>> action)
         {
+            var baseAddresses = builder.ApplicationServices.GetService<IBaseAddressProvider>();
+            baseAddresses.AddBaseAddressFor<TService>(path);
+
             var endpoints = builder.ApplicationServices.GetService<EndpointBuilder<TService>>();
             action(endpoints);
 
             return builder.UseMiddleware<WcfProxyMiddleware<TService>>(path);
-
-
-            //return builder.MapWhen(context => 
-            //    context.Request.Path.StartsWithSegments(path), 
-            //    b => b.UseMiddleware<WcfProxyMiddleware<TService>>(path));
         }
     }
 }

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Abstractions
 {
-    internal interface IBaseAddressFactory
+    internal interface IServiceHostProvider<TService>
     {
-        IEnumerable<Uri> Create(string path);
-        IEnumerable<Uri> Create(string path, bool direct);
+        ServiceHost Host { get; }
     }
 }

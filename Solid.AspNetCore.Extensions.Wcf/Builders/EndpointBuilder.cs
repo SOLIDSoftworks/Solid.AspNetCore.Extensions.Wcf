@@ -8,17 +8,18 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using System.ServiceModel;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Builders
 {
     internal class EndpointBuilder<TService> : IEndpointBuilder<TService>
     {
-        private AspNetCoreServiceHost<TService> _host;
+        private ServiceHost _host;
         private IServiceProvider _services;
 
-        public EndpointBuilder(AspNetCoreServiceHost<TService> host, IServiceProvider services)
+        public EndpointBuilder(IServiceHostProvider<TService> hostProvider, IServiceProvider services)
         {
-            _host = host;
+            _host = hostProvider.Host;
             _services = services;
         }
 
@@ -40,8 +41,28 @@ namespace Solid.AspNetCore.Extensions.Wcf.Builders
 
         public IEndpointBuilder<TService> AddServiceEndpoint<TContract>(Binding binding, string path)
         {
-            _host.AddEndpoint<TContract>(binding, path);
+            _host.AddServiceEndpoint(typeof(TContract), SanitizeBinding(binding), path);
             return this;
+        }
+
+        private Binding SanitizeBinding(Binding dirty)
+        {
+            var custom = dirty as CustomBinding;
+            if (custom == null)
+                custom = new CustomBinding(dirty);
+
+            var security = custom.Elements.OfType<SecurityBindingElement>();
+            foreach (var element in security)
+                element.AllowInsecureTransport = true;
+
+            var https = custom.Elements.OfType<TransportBindingElement>().Where(e => e.Scheme == "https").FirstOrDefault();
+            if (https != null)
+            {
+                var http = new HttpTransportBindingElement();
+                custom.Elements.Remove(https);
+                custom.Elements.Add(http);
+            }
+            return custom;
         }
     }
 }

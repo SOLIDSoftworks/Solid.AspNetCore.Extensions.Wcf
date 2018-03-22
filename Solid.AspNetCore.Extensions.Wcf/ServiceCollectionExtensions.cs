@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Solid.AspNetCore.Extensions.Wcf.Abstractions;
 using Solid.AspNetCore.Extensions.Wcf.Builders;
 using Solid.AspNetCore.Extensions.Wcf.Extensions;
-using Solid.AspNetCore.Extensions.Wcf.Factories;
+using Solid.AspNetCore.Extensions.Wcf.Models;
 using Solid.AspNetCore.Extensions.Wcf.Providers;
 using Solid.AspNetCore.Extensions.Wcf.ServiceModel;
 using Solid.AspNetCore.Extensions.Wcf.ServiceModel.Description;
@@ -49,13 +49,15 @@ namespace Solid.AspNetCore.Extensions.Wcf
             var type = typeof(TService);
             services
                 .TryAddServiceModel()
-                .AddSingleton(p => p.GetService<IServiceHostFactory>().Create<TService>())
-                .AddSingleton<AspNetCoreServiceHost>(p => p.GetService<AspNetCoreServiceHost<TService>>())
-                .AddSingleton<ServiceHost>(p => p.GetService<AspNetCoreServiceHost<TService>>())
+                .AddSingleton(p => p.GetService<IServiceHostProvider<TService>>().Host)
                 .Add(ServiceDescriptor.Describe(type, type, type.GetServiceLifetime()));
 
             var builder = new ServiceHostConfigurtion<TService>(services);
             action(builder);
+
+            if (builder.ServiceHostFactory != null)
+                services.AddSingleton(builder.ServiceHostFactory);
+
             return services;
         }
 
@@ -124,8 +126,8 @@ namespace Solid.AspNetCore.Extensions.Wcf
             var comparer = new ServiceDescriptorImplementationTypeEqualityComparer();
             
             services.TryAddTransient<Binding, BasicHttpBinding>();
-            services.TryAddSingleton<IServiceHostFactory, ServiceHostFactory>();
-            services.TryAddSingleton<IBaseAddressFactory, BaseAddressFactory>();
+            services.TryAddSingleton(typeof(IServiceHostProvider<>), typeof(ServiceHostProvider<>));
+            services.TryAddSingleton<IBaseAddressProvider, BaseAddressProvider>();
             services.TryAddTransient<IServiceBehavior, AspNetCoreInstanceProviderBehavior>(comparer);
             services.TryAddTransient<IServiceBehavior, UseRequestHeadersForMetadataAddressBehavior>(comparer);
             services.TryAddTransient<IServiceBehavior, MatchAnyAddressServiceBehavior>(comparer);
