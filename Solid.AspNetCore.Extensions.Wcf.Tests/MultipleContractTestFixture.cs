@@ -29,7 +29,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests
         {
             if (_echo == null)
             {
-                var url = new Uri(TestingServer.BaseAddress, "multiple/echo");
+                var url = new Uri(TestingServer.BaseAddress, "multiple/endpoints/echo/endpoint");
                 var binding = new BasicHttpBinding();
                 var endpoint = new EndpointAddress(url);
                 var factory = new ChannelFactory<IEchoContract>(binding, endpoint);
@@ -69,7 +69,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests
         {
             if (_counter == null)
             {
-                var url = new Uri(TestingServer.BaseAddress, "multiple/counter");
+                var url = new Uri(TestingServer.BaseAddress, "multiple/endpoints/counter/endpoint");
                 var binding = new BasicHttpBinding();
                 var endpoint = new EndpointAddress(url);
                 var factory = new ChannelFactory<ICounterContract>(binding, endpoint);

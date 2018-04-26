@@ -25,10 +25,11 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests.Host
                 .Use(async (context, next) =>
                 {
                     if(context.Request.Path.StartsWithSegments("/replaceecho"))
-                        context.Request.Path = "/multiple/echo";
+                        context.Request.Path = "/multiple/endpoints/echo/endpoint";
                     await next();
                 })
-                .UseWcfService<MultipleContract>("/multiple", b => b.AddServiceEndpoint<IEchoContract>("/echo").AddServiceEndpoint<ICounterContract>("counter"));
+                .UseWcfService<MultipleContract>("/multiple/endpoints", b => 
+                    b.AddServiceEndpoint<IEchoContract>("/echo/endpoint").AddServiceEndpoint<ICounterContract>("counter/endpoint"));
         }
 
         ServiceHost CreateServiceHost(IServiceProvider provider, MultipleContract singleton, Type type, Uri[] baseAddresses)

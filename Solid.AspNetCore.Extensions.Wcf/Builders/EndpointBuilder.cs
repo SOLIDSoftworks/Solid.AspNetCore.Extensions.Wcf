@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.ServiceModel;
+using System.ServiceModel.Description;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Builders
 {
@@ -41,7 +42,30 @@ namespace Solid.AspNetCore.Extensions.Wcf.Builders
 
         public IEndpointBuilder<TService> AddServiceEndpoint<TContract>(Binding binding, string path)
         {
-            _host.AddServiceEndpoint(typeof(TContract), SanitizeBinding(binding), path);
+            return AddServiceEndpoint<TContract>(binding, path, (_1, _2) => { });
+        }
+
+        public IEndpointBuilder<TService> AddServiceEndpoint<TContract>(Action<IServiceProvider, ServiceEndpoint> action)
+        {
+            var binding = _services.GetService<Binding>();
+            return AddServiceEndpoint<TContract>(binding, action);
+        }
+
+        public IEndpointBuilder<TService> AddServiceEndpoint<TContract>(string path, Action<IServiceProvider, ServiceEndpoint> action)
+        {
+            var binding = _services.GetService<Binding>();
+            return AddServiceEndpoint<TContract>(binding, path, action);
+        }
+
+        public IEndpointBuilder<TService> AddServiceEndpoint<TContract>(Binding binding, Action<IServiceProvider, ServiceEndpoint> action)
+        {
+            return AddServiceEndpoint<TContract>(binding, string.Empty, action);
+        }
+
+        public IEndpointBuilder<TService> AddServiceEndpoint<TContract>(Binding binding, string path, Action<IServiceProvider, ServiceEndpoint> action)
+        {
+            var endpoint = _host.AddServiceEndpoint(typeof(TContract), SanitizeBinding(binding), path);
+            action(_services, endpoint);
             return this;
         }
 
