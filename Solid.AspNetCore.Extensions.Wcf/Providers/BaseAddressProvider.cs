@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Solid.AspNetCore.Extensions.Wcf.Abstractions;
 using System;
@@ -32,7 +33,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Providers
         public Uri[] GetBaseAddressesFor<TService>()
         {
             var paths = GetPathsFor<TService>();
-            var root = GenerateRootAddress();
+            var root = GenerateRootAddresses();
             return paths
                 .Select(p => p.ToString())
                 .Select(s =>
@@ -41,15 +42,13 @@ namespace Solid.AspNetCore.Extensions.Wcf.Providers
                         s = s + "/";
                     return s;
                 })
-                .Select(s => new Uri(root, s))
+                .SelectMany(s => root.Select(r => new Uri(r, s)))
                 .ToArray();
         }
 
-        private Uri GenerateRootAddress()
+        private IEnumerable<Uri> GenerateRootAddresses()
         {
-            // TODO: User IServer for pathbase
-
-            return new Uri($"http://localhost:{GetFreePort()}");
+            return _server.Features.Get<IServerAddressesFeature>().Addresses.Select(u => new Uri(u));
         }
 
         private List<PathString> GetPathsFor<TService>()
@@ -57,13 +56,13 @@ namespace Solid.AspNetCore.Extensions.Wcf.Providers
             return _baseAddresses.GetOrAdd(typeof(TService), t => new List<PathString>());
         }
 
-        private int GetFreePort()
-        {
-            var listener = new TcpListener(IPAddress.Loopback, 0);
-            listener.Start();
-            var port = ((IPEndPoint)listener.LocalEndpoint).Port;
-            listener.Stop();
-            return port;
-        }
+        //private int GetFreePort()
+        //{
+        //    var listener = new TcpListener(IPAddress.Loopback, 0);
+        //    listener.Start();
+        //    var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+        //    listener.Stop();
+        //    return port;
+        //}
     }
 }

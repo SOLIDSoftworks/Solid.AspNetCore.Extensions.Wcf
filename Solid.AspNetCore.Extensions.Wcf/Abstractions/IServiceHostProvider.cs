@@ -10,5 +10,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Abstractions
     internal interface IServiceHostProvider<TService>
     {
         ServiceHost Host { get; }
+
+        void AddStartupAction(Action<ServiceHost> action);
     }
 }

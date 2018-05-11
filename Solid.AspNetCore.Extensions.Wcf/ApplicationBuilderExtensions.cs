@@ -46,7 +46,8 @@ namespace Solid.AspNetCore.Extensions.Wcf
             var endpoints = builder.ApplicationServices.GetService<EndpointBuilder<TService>>();
             action(endpoints);
 
-            return builder.UseMiddleware<WcfProxyMiddleware<TService>>(path);
+            return builder.UseMiddleware<AspNetCoreTransportMiddleware<TService>>(path);
+            //return builder.UseMiddleware<WcfProxyMiddleware<TService>>(path);
         }
     }
 }

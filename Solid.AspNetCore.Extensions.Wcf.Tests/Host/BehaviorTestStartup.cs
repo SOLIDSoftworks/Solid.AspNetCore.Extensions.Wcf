@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Solid.AspNetCore.Extensions.Wcf.Tests.Abstractions;
 using Solid.AspNetCore.Extensions.Wcf.Tests.Host.Behaviors;
+using Solid.AspNetCore.Extensions.Wcf.Tests.Host.Middleware;
 using Solid.AspNetCore.Extensions.Wcf.Tests.Host.Services;
 using System;
 using System.Collections.Generic;
@@ -32,12 +33,15 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests.Host
 
             services.AddSingleton<UserNamePasswordValidator>(MockUserNamePasswordValidator.Object);
             services.AddSingleton<IServiceBehavior, UserNamePasswordValidatorBehavior>();
+            services.AddSingleton<IServiceBehavior, OutputBehavior>();
             services.AddWcfServiceWithMetadata<SingletonService>().AddDefaultBinding(binding);
         }
 
         public void Configure(IApplicationBuilder builder)
         {
-            builder.UseWcfService<SingletonService, IInstanceTestService>("/singleton");
+            builder
+                .UseMiddleware<OutputMiddleware>()
+                .UseWcfService<SingletonService, IInstanceTestService>("/singleton");
         }
     }
 }

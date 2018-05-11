@@ -1,8 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Solid.AspNetCore.Extensions.Wcf.Abstractions;
+using Solid.AspNetCore.Extensions.Wcf.Behaviors;
 using Solid.AspNetCore.Extensions.Wcf.Builders;
+using Solid.AspNetCore.Extensions.Wcf.Channels;
+using Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore;
 using Solid.AspNetCore.Extensions.Wcf.Extensions;
+using Solid.AspNetCore.Extensions.Wcf.Factories;
 using Solid.AspNetCore.Extensions.Wcf.Models;
 using Solid.AspNetCore.Extensions.Wcf.Providers;
 using Solid.AspNetCore.Extensions.Wcf.ServiceModel;
@@ -124,13 +128,16 @@ namespace Solid.AspNetCore.Extensions.Wcf
         private static IServiceCollection TryAddServiceModel(this IServiceCollection services)
         {
             var comparer = new ServiceDescriptorImplementationTypeEqualityComparer();
-            
+
+            services.TryAddSingleton<IMessageFactory, DefaultMessageFactory>();
             services.TryAddTransient<Binding, BasicHttpBinding>();
+            services.TryAddSingleton<IAspNetCoreHandler, AspNetCoreHandler>();
             services.TryAddSingleton(typeof(IServiceHostProvider<>), typeof(ServiceHostProvider<>));
             services.TryAddSingleton<IBaseAddressProvider, BaseAddressProvider>();
             services.TryAddTransient<IServiceBehavior, AspNetCoreInstanceProviderBehavior>(comparer);
-            services.TryAddTransient<IServiceBehavior, UseRequestHeadersForMetadataAddressBehavior>(comparer);
-            services.TryAddTransient<IServiceBehavior, MatchAnyAddressServiceBehavior>(comparer);
+            //services.TryAddTransient<IServiceBehavior, UseRequestHeadersForMetadataAddressBehavior>(comparer);
+            //services.TryAddTransient<IServiceBehavior, MatchAnyAddressServiceBehavior>(comparer);
+            services.TryAddTransient<IServiceBehavior, AspNetCoreListenerBehavior>(comparer);
             services.TryAddSingleton(typeof(EndpointBuilder<>));
 
             return services;

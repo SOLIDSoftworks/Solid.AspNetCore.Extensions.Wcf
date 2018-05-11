@@ -10,17 +10,19 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using Solid.AspNetCore.Extensions.Wcf.Channels;
+using Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Builders
 {
     internal class EndpointBuilder<TService> : IEndpointBuilder<TService>
     {
-        private ServiceHost _host;
+        private IServiceHostProvider<TService> _hostProvider;
         private IServiceProvider _services;
 
         public EndpointBuilder(IServiceHostProvider<TService> hostProvider, IServiceProvider services)
         {
-            _host = hostProvider.Host;
+            _hostProvider = hostProvider;
             _services = services;
         }
 
@@ -64,8 +66,11 @@ namespace Solid.AspNetCore.Extensions.Wcf.Builders
 
         public IEndpointBuilder<TService> AddServiceEndpoint<TContract>(Binding binding, string path, Action<IServiceProvider, ServiceEndpoint> action)
         {
-            var endpoint = _host.AddServiceEndpoint(typeof(TContract), SanitizeBinding(binding), path);
-            action(_services, endpoint);
+            _hostProvider.AddStartupAction(host =>
+            {
+                var endpoint = host.AddServiceEndpoint(typeof(TContract), SanitizeBinding(binding), path);
+                action(_services, endpoint);
+            });
             return this;
         }
 
@@ -79,14 +84,25 @@ namespace Solid.AspNetCore.Extensions.Wcf.Builders
             foreach (var element in security)
                 element.AllowInsecureTransport = true;
 
-            var https = custom.Elements.OfType<TransportBindingElement>().Where(e => e.Scheme == "https").FirstOrDefault();
-            if (https != null)
-            {
-                var http = new HttpTransportBindingElement();
-                custom.Elements.Remove(https);
-                custom.Elements.Add(http);
-            }
+            Replace<HttpTransportBindingElement>(custom);
+            Replace<HttpsTransportBindingElement>(custom);
+
             return custom;
+        }
+
+        private void Replace<TTransport>(CustomBinding custom)
+            where TTransport : TransportBindingElement
+        {
+            var current = custom.Elements.OfType<TTransport>().FirstOrDefault();
+            if (current != null)
+            {
+                custom.Elements.Remove(current);
+                //custom.Elements.Add(new HttpTransportBindingElement());
+                var handler = _services.GetService<IAspNetCoreHandler>();
+                var factory = _services.GetService<IMessageFactory>();
+                var aspNetCore = new AspNetCoreTransportBindingElement<TService>(handler, factory);
+                custom.Elements.Add(aspNetCore);
+            }
         }
     }
 }
