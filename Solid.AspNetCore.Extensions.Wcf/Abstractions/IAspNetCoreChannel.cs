@@ -9,6 +9,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Abstractions
 {
     internal interface IAspNetCoreChannel
     {
+        Guid Id { get; }
         Uri BaseAddress { get; }
         Task OpenAsync();
         Task HandleAsync(HttpContext context);

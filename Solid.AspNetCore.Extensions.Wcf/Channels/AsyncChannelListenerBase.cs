@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Channels
 {
-    internal abstract class AsyncChannelListenerBase<TChannel> : AsyncCommunicationObject, IChannelListener<TChannel>, IDefaultCommunicationTimeouts
+    internal abstract class AsyncChannelListenerBase<TChannel> : ChannelListenerBase<TChannel>
         where TChannel : class, IChannel
     {
-        public Uri Uri { get; }
+        public override Uri Uri { get; }
         
         protected AsyncChannelListenerBase(IDefaultCommunicationTimeouts timeouts, Uri uri) 
             : base(timeouts)
@@ -19,48 +19,77 @@ namespace Solid.AspNetCore.Extensions.Wcf.Channels
             Uri = uri;
         }
 
-        protected virtual Task<TChannel> OnAcceptChannelAsync()
+        protected override void OnAbort()
         {
-            return AcceptChannelAsync(ReceiveTimeout);
         }
 
         protected abstract Task<TChannel> OnAcceptChannelAsync(TimeSpan timeout);
-        public abstract T GetProperty<T>() where T : class;
+        protected abstract Task OnCloseAsync(TimeSpan timeout);
+        protected abstract Task OnOpenAsync(TimeSpan timeout);
+        protected abstract Task<bool> OnWaitForChannelAsync(TimeSpan timeout);
 
-        public TChannel AcceptChannel()
+        protected override TChannel OnAcceptChannel(TimeSpan timeout)
         {
-            return AcceptChannelAsync().Result;
+            return OnAcceptChannelAsync(timeout).Result;
         }
 
-        public TChannel AcceptChannel(TimeSpan timeout)
+        protected override void OnClose(TimeSpan timeout)
         {
-            return AcceptChannelAsync(timeout).Result;
+            OnCloseAsync(timeout).Wait();
         }
 
-        public IAsyncResult BeginAcceptChannel(AsyncCallback callback, object state)
+        protected override void OnOpen(TimeSpan timeout)
         {
-            return AcceptChannelAsync().ToAsyncResult(callback, state);
+            OnOpenAsync(timeout).Wait();
         }
 
-        public IAsyncResult BeginAcceptChannel(TimeSpan timeout, AsyncCallback callback, object state)
+        protected override bool OnWaitForChannel(TimeSpan timeout)
         {
-            return AcceptChannelAsync(timeout).ToAsyncResult(callback, state);
+            return OnWaitForChannelAsync(timeout).Result;
         }
 
-        public TChannel EndAcceptChannel(IAsyncResult result)
+        protected override IAsyncResult OnBeginAcceptChannel(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            return OnAcceptChannelAsync(timeout).ToAsyncResult(callback, state);
+        }
+
+        protected override TChannel OnEndAcceptChannel(IAsyncResult result)
         {
             var task = result as Task<TChannel>;
             return task?.Result;
         }
 
-        private Task<TChannel> AcceptChannelAsync()
+        protected override IAsyncResult OnBeginClose(TimeSpan timeout, AsyncCallback callback, object state)
         {
-            return AcceptChannelAsync(ReceiveTimeout);
-        }
-        private Task<TChannel> AcceptChannelAsync(TimeSpan timeout)
-        {
-            return OnAcceptChannelAsync(timeout);
+            return OnCloseAsync(timeout).ToAsyncResult(callback, state);
         }
 
+        protected override void OnEndClose(IAsyncResult result)
+        {
+            var task = result as Task;
+            // TODO: do something here?
+        }
+
+        protected override IAsyncResult OnBeginOpen(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            return OnOpenAsync(timeout).ToAsyncResult(callback, state);
+        }
+
+        protected override void OnEndOpen(IAsyncResult result)
+        {
+            var task = result as Task;
+            // TODO: do something here?
+        }
+
+        protected override IAsyncResult OnBeginWaitForChannel(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            return OnWaitForChannelAsync(timeout).ToAsyncResult(callback, state);
+        }
+
+        protected override bool OnEndWaitForChannel(IAsyncResult result)
+        {
+            var task = result as Task<bool>;
+            return task?.Result ?? false;
+        }
     }
 }

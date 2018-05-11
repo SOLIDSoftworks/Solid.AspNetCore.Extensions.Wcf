@@ -10,8 +10,8 @@ namespace Solid.AspNetCore.Extensions.Wcf.Channels
 {
     internal abstract class AsyncReplyChannelBase : AsyncChannelBase, IReplyChannel
     {
-        protected AsyncReplyChannelBase(IDefaultCommunicationTimeouts timeouts) 
-            : base(timeouts)
+        protected AsyncReplyChannelBase(ChannelManagerBase manager) 
+            : base(manager)
         {
         }
 
@@ -45,8 +45,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Channels
         {
             var task = result as Task<RequestContext>;
             return task?.Result;
-        }
-        
+        }        
 
         public bool TryReceiveRequest(TimeSpan timeout, out RequestContext context)
         {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Solid.AspNetCore.Extensions.Wcf.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -17,13 +18,16 @@ namespace Solid.AspNetCore.Extensions.Wcf.Middleware
         private IServiceHostProvider<TService> _provider;
         private PathString _path;
         private IAspNetCoreHandler _handler;
+        private ILogger<AspNetCoreTransportMiddleware<TService>> _logger;
 
-        public AspNetCoreTransportMiddleware(RequestDelegate next, IServiceHostProvider<TService> provider, IAspNetCoreHandler handler, PathString path)
+        public AspNetCoreTransportMiddleware(RequestDelegate next, ILogger<AspNetCoreTransportMiddleware<TService>> logger , IServiceHostProvider<TService> provider, IAspNetCoreHandler handler, PathString path)
         {
             _next = next;
             _provider = provider;
             _path = path;
             _handler = handler;
+
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -37,7 +41,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Middleware
                     {
                         host.Open();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
 
                     }

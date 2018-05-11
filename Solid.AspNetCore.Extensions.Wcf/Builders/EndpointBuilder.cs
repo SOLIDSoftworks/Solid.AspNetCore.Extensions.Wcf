@@ -19,11 +19,13 @@ namespace Solid.AspNetCore.Extensions.Wcf.Builders
     {
         private IServiceHostProvider<TService> _hostProvider;
         private IServiceProvider _services;
+        private IBindingSanitizer _sanitizer;
 
-        public EndpointBuilder(IServiceHostProvider<TService> hostProvider, IServiceProvider services)
+        public EndpointBuilder(IServiceHostProvider<TService> hostProvider, IServiceProvider services, IBindingSanitizer sanitizer)
         {
             _hostProvider = hostProvider;
             _services = services;
+            _sanitizer = sanitizer;
         }
 
         public IEndpointBuilder<TService> AddServiceEndpoint<TContract>()
@@ -68,41 +70,10 @@ namespace Solid.AspNetCore.Extensions.Wcf.Builders
         {
             _hostProvider.AddStartupAction(host =>
             {
-                var endpoint = host.AddServiceEndpoint(typeof(TContract), SanitizeBinding(binding), path);
+                var endpoint = host.AddServiceEndpoint(typeof(TContract), _sanitizer.SanitizeBinding(binding), path);
                 action(_services, endpoint);
             });
             return this;
-        }
-
-        private Binding SanitizeBinding(Binding dirty)
-        {
-            var custom = dirty as CustomBinding;
-            if (custom == null)
-                custom = new CustomBinding(dirty);
-
-            var security = custom.Elements.OfType<SecurityBindingElement>();
-            foreach (var element in security)
-                element.AllowInsecureTransport = true;
-
-            Replace<HttpTransportBindingElement>(custom);
-            Replace<HttpsTransportBindingElement>(custom);
-
-            return custom;
-        }
-
-        private void Replace<TTransport>(CustomBinding custom)
-            where TTransport : TransportBindingElement
-        {
-            var current = custom.Elements.OfType<TTransport>().FirstOrDefault();
-            if (current != null)
-            {
-                custom.Elements.Remove(current);
-                //custom.Elements.Add(new HttpTransportBindingElement());
-                var handler = _services.GetService<IAspNetCoreHandler>();
-                var factory = _services.GetService<IMessageFactory>();
-                var aspNetCore = new AspNetCoreTransportBindingElement<TService>(handler, factory);
-                custom.Elements.Add(aspNetCore);
-            }
         }
     }
 }

@@ -31,7 +31,10 @@ namespace Solid.AspNetCore.Extensions.Wcf.Providers
         {
             _baseAddresses = baseAddresses;
             _factory = factory ?? _defaultFactory;
-            _behaviors = globalBehaviors.Concat(instanceBehaviors.Select(b => b.Behavior)).ToList();
+            _behaviors = globalBehaviors
+                .Concat(instanceBehaviors.Select(b => b.Behavior))
+                .OrderByDescending(b => b.GetType().Namespace.StartsWith("System") || b.GetType().Namespace.StartsWith("Microsoft"))
+                .ToList();
             _provider = provider;
             _actions = new List<Action<ServiceHost>>();
 
@@ -47,6 +50,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Providers
             if(typeof(TService).GetServiceLifetime() == ServiceLifetime.Singleton)
                 singleton = _provider.GetService<TService>();
             var host = _factory(_provider, singleton, typeof(TService), baseAddresses);
+
             foreach (var behavior in _behaviors)
                 host.Description.Behaviors.Add(behavior);
             foreach (var action in _actions)

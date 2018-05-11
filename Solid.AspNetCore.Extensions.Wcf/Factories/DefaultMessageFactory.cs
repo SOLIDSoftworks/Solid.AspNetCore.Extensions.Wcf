@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Solid.AspNetCore.Extensions.Wcf.Abstractions;
+using Solid.AspNetCore.Extensions.Wcf.Channels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,12 @@ namespace Solid.AspNetCore.Extensions.Wcf.Factories
         {
             var encoder = GetMessageEncoderFactory(binding).Encoder;
             var request = http.Request;
-            var message = encoder.ReadMessage(request.Body, int.MaxValue);
+
+            var message = null as Message;
+            if (request.ContentLength != null && request.ContentLength > 0)
+                message = encoder.ReadMessage(request.Body, int.MaxValue);
+            else
+                message = new NullMessage();
             if (message.Headers.To == null)
                 message.Headers.To = request.GetRequestUri();
             if (message.Headers.Action == null)

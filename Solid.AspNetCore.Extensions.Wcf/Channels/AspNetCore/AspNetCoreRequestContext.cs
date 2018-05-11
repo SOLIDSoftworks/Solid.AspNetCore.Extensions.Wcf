@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore
 {
-    class AspNetCoreRequestContext<TService> : AsyncRequestContextBase
+    class AspNetCoreRequestContext : AsyncRequestContextBase
     {
         private HttpContext _http;
 

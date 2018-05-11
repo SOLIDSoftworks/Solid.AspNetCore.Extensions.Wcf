@@ -11,6 +11,7 @@ using Solid.AspNetCore.Extensions.Wcf.Models;
 using Solid.AspNetCore.Extensions.Wcf.Providers;
 using Solid.AspNetCore.Extensions.Wcf.ServiceModel;
 using Solid.AspNetCore.Extensions.Wcf.ServiceModel.Description;
+using Solid.AspNetCore.Extensions.Wcf.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,12 +133,13 @@ namespace Solid.AspNetCore.Extensions.Wcf
             services.TryAddSingleton<IMessageFactory, DefaultMessageFactory>();
             services.TryAddTransient<Binding, BasicHttpBinding>();
             services.TryAddSingleton<IAspNetCoreHandler, AspNetCoreHandler>();
+            services.TryAddSingleton<IBindingSanitizer, BindingSanitizer>();
             services.TryAddSingleton(typeof(IServiceHostProvider<>), typeof(ServiceHostProvider<>));
             services.TryAddSingleton<IBaseAddressProvider, BaseAddressProvider>();
             services.TryAddTransient<IServiceBehavior, AspNetCoreInstanceProviderBehavior>(comparer);
-            //services.TryAddTransient<IServiceBehavior, UseRequestHeadersForMetadataAddressBehavior>(comparer);
-            //services.TryAddTransient<IServiceBehavior, MatchAnyAddressServiceBehavior>(comparer);
-            services.TryAddTransient<IServiceBehavior, AspNetCoreListenerBehavior>(comparer);
+            services.TryAddTransient<IServiceBehavior, UseRequestHeadersForMetadataAddressBehavior>(comparer);
+            services.TryAddTransient<IServiceBehavior, MatchAnyAddressServiceBehavior>(comparer);
+            services.TryAddTransient<IServiceBehavior, AspNetCoreServiceMetadataBehavior>(comparer);
             services.TryAddSingleton(typeof(EndpointBuilder<>));
 
             return services;

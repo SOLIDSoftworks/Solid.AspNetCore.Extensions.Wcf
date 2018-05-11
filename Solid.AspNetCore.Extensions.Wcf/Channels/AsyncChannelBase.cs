@@ -8,16 +8,50 @@ using System.Threading.Tasks;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Channels
 {
-    internal abstract class AsyncChannelBase : AsyncCommunicationObject, IChannel, ICommunicationObject, IDefaultCommunicationTimeouts
+    internal abstract class AsyncChannelBase : ChannelBase
     {
-        protected AsyncChannelBase(IDefaultCommunicationTimeouts timeouts) 
-            : base(timeouts)
+        protected AsyncChannelBase(ChannelManagerBase manager) 
+            : base(manager)
         {
         }
 
-        public T GetProperty<T>() where T : class
+        protected override void OnAbort()
         {
-            throw new NotImplementedException();
+        }
+
+        protected abstract Task OnOpenAsync(TimeSpan timeout);
+        protected abstract Task OnCloseAsync(TimeSpan timeout);
+        
+        protected override void OnClose(TimeSpan timeout)
+        {
+            OnCloseAsync(timeout).Wait();
+        }
+
+        protected override void OnOpen(TimeSpan timeout)
+        {
+            OnOpenAsync(timeout).Wait();
+        }
+
+        protected override IAsyncResult OnBeginClose(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            return OnCloseAsync(timeout).ToAsyncResult(callback, state);
+        }
+
+        protected override void OnEndClose(IAsyncResult result)
+        {
+            var task = result as Task;
+            // TODO: do something here?
+        }
+
+        protected override IAsyncResult OnBeginOpen(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            return OnOpenAsync(timeout).ToAsyncResult(callback, state);
+        }
+
+        protected override void OnEndOpen(IAsyncResult result)
+        {
+            var task = result as Task;
+            // TODO: do something here?
         }
     }
 }
