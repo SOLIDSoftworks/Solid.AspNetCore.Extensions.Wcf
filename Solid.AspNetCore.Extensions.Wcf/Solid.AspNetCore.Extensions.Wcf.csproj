@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
+    <Version>1.1.0</Version>
+    <Authors>Solid Softworks</Authors>
+    <RepositoryUrl>https://github.com/SOLIDSoftworks/Solid.AspNetCore.Extensions.Wcf</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://solidsoft.works</PackageProjectUrl>
+    <PackageTags>aspnetcore wcf wcf-service netframework</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
