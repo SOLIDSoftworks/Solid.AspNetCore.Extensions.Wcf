@@ -1,5 +1,4 @@
 ﻿using Solid.AspNetCore.Extensions.Wcf.Abstractions;
-using Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Services
 {
@@ -47,7 +47,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Services
                 var handler = _services.GetService<IAspNetCoreHandler>();
                 var factory = _services.GetService<IMessageFactory>();
                 var loggerFactory = _services.GetService<ILoggerFactory>();
-                var aspNetCore = new AspNetCoreTransportBindingElement(handler, factory, loggerFactory);
+                var aspNetCore = new AspNetCoreTransportBindingElement(current.Scheme, handler, factory, loggerFactory);
                 custom.Elements.Add(aspNetCore);
             }
         }

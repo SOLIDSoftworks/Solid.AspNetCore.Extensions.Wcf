@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore
+namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
 {
     internal class AspNetCoreReplyChannel : AsyncReplyChannelBase
     {

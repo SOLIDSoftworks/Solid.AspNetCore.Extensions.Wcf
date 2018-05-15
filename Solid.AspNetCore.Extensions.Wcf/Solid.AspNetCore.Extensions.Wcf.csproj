@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dispatcher\" />
+    <Folder Include="ServiceModel\Dispatcher\" />
   </ItemGroup>
 
 </Project>

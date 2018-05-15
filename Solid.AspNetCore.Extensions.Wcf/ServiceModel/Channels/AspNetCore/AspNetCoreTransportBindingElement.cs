@@ -7,7 +7,7 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore
+namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
 {
     internal class AspNetCoreTransportBindingElement : TransportBindingElement
     {
@@ -17,28 +17,30 @@ namespace Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore
 
         internal IAspNetCoreHandler Handler { get; }
 
-        public AspNetCoreTransportBindingElement(IAspNetCoreHandler handler, IMessageFactory factory, ILoggerFactory loggerFactory)
+        public AspNetCoreTransportBindingElement(string scheme, IAspNetCoreHandler handler, IMessageFactory factory, ILoggerFactory loggerFactory)
         {
+            Scheme = scheme;
             Handler = handler;
             MessageFactory = factory;
 
             _loggerFactory = loggerFactory;
         }
 
-        protected AspNetCoreTransportBindingElement(IAspNetCoreHandler handler, IMessageFactory factory, ILoggerFactory loggerFactory, TransportBindingElement elementToBeCloned) 
+        protected AspNetCoreTransportBindingElement(string scheme, IAspNetCoreHandler handler, IMessageFactory factory, ILoggerFactory loggerFactory, TransportBindingElement elementToBeCloned) 
             : base(elementToBeCloned)
         {
+            Scheme = scheme;
             Handler = handler;
             MessageFactory = factory;
 
             _loggerFactory = loggerFactory;
         }
 
-        public override string Scheme => "http";
+        public override string Scheme { get; }
 
         public override BindingElement Clone()
         {
-            return new AspNetCoreTransportBindingElement(Handler, MessageFactory, _loggerFactory, this);
+            return new AspNetCoreTransportBindingElement(Scheme, Handler, MessageFactory, _loggerFactory, this);
         }
 
         public override bool CanBuildChannelListener<TChannel>(BindingContext context)

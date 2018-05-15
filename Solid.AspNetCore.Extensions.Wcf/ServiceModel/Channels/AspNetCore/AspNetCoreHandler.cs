@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore
+namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
 {
     internal class AspNetCoreHandler : IAspNetCoreHandler
     {

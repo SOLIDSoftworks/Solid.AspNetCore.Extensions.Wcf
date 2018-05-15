@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.ServiceModel;
 using System.ServiceModel.Description;
-using Solid.AspNetCore.Extensions.Wcf.Channels;
-using Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Builders
 {

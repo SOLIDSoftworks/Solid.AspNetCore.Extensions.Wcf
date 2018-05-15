@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Solid.AspNetCore.Extensions.Wcf.Abstractions;
-using Solid.AspNetCore.Extensions.Wcf.Channels;
+using Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels;
 using System;
 using System.Collections.Generic;
 using System.IO;

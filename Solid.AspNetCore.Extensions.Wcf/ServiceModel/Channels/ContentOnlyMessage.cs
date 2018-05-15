@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Solid.AspNetCore.Extensions.Wcf.Channels
+namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels
 {
     internal abstract class ContentOnlyMessage : Message
     {
