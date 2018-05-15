@@ -1,5 +1,4 @@
 ﻿using Solid.AspNetCore.Extensions.Wcf.Abstractions;
-using Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

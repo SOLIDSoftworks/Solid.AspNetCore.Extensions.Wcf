@@ -5,7 +5,7 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Solid.AspNetCore.Extensions.Wcf.Channels
+namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels
 {
     internal abstract class AsyncRequestContextBase : RequestContext
     {

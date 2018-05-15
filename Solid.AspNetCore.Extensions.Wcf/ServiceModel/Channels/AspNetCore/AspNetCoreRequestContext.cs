@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore
+namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
 {
     class AspNetCoreRequestContext : AsyncRequestContextBase
     {

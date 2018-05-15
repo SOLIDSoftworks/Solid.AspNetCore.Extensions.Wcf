@@ -12,7 +12,7 @@ using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Solid.AspNetCore.Extensions.Wcf.Abstractions;
 
-namespace Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore
+namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
 {
     class AspNetCoreChannelListener : AsyncChannelListenerBase<IReplyChannel>
     {
