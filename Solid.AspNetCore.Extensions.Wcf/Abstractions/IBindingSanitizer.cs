@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Abstractions
 {
-    internal interface IServiceHostProvider<TService>
+    internal interface IBindingSanitizer
     {
-        ServiceHost Host { get; }
-
-        void AddStartupAction(Action<ServiceHost> action);
+        Binding SanitizeBinding(Binding binding);
     }
 }

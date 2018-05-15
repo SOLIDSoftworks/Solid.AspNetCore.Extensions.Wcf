@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
+    <Version>1.1.0</Version>
+    <Authors>Solid Softworks</Authors>
+    <RepositoryUrl>https://github.com/SOLIDSoftworks/Solid.AspNetCore.Extensions.Wcf</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://solidsoft.works</PackageProjectUrl>
+    <PackageTags>aspnetcore wcf wcf-service netframework</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,8 +23,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Tpl.Dataflow" Version="4.5.24" />
     <PackageReference Include="System.ServiceModel.Http" Version="4.4.1" />
     <PackageReference Include="System.ServiceModel.Security" Version="4.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dispatcher\" />
   </ItemGroup>
 
 </Project>

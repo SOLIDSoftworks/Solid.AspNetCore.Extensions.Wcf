@@ -10,18 +10,22 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using Solid.AspNetCore.Extensions.Wcf.Channels;
+using Solid.AspNetCore.Extensions.Wcf.Channels.AspNetCore;
 
 namespace Solid.AspNetCore.Extensions.Wcf.Builders
 {
     internal class EndpointBuilder<TService> : IEndpointBuilder<TService>
     {
-        private ServiceHost _host;
+        private IServiceHostProvider<TService> _hostProvider;
         private IServiceProvider _services;
+        private IBindingSanitizer _sanitizer;
 
-        public EndpointBuilder(IServiceHostProvider<TService> hostProvider, IServiceProvider services)
+        public EndpointBuilder(IServiceHostProvider<TService> hostProvider, IServiceProvider services, IBindingSanitizer sanitizer)
         {
-            _host = hostProvider.Host;
+            _hostProvider = hostProvider;
             _services = services;
+            _sanitizer = sanitizer;
         }
 
         public IEndpointBuilder<TService> AddServiceEndpoint<TContract>()
@@ -64,29 +68,12 @@ namespace Solid.AspNetCore.Extensions.Wcf.Builders
 
         public IEndpointBuilder<TService> AddServiceEndpoint<TContract>(Binding binding, string path, Action<IServiceProvider, ServiceEndpoint> action)
         {
-            var endpoint = _host.AddServiceEndpoint(typeof(TContract), SanitizeBinding(binding), path);
-            action(_services, endpoint);
-            return this;
-        }
-
-        private Binding SanitizeBinding(Binding dirty)
-        {
-            var custom = dirty as CustomBinding;
-            if (custom == null)
-                custom = new CustomBinding(dirty);
-
-            var security = custom.Elements.OfType<SecurityBindingElement>();
-            foreach (var element in security)
-                element.AllowInsecureTransport = true;
-
-            var https = custom.Elements.OfType<TransportBindingElement>().Where(e => e.Scheme == "https").FirstOrDefault();
-            if (https != null)
+            _hostProvider.AddStartupAction(host =>
             {
-                var http = new HttpTransportBindingElement();
-                custom.Elements.Remove(https);
-                custom.Elements.Add(http);
-            }
-            return custom;
+                var endpoint = host.AddServiceEndpoint(typeof(TContract), _sanitizer.SanitizeBinding(binding), path);
+                action(_services, endpoint);
+            });
+            return this;
         }
     }
 }

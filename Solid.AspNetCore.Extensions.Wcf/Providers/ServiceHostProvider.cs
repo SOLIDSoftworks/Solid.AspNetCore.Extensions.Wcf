@@ -20,6 +20,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Providers
         private ServiceHostFactoryDelegate<TService> _factory;
         private IEnumerable<IServiceBehavior> _behaviors;
         private IServiceProvider _provider;
+        private List<Action<ServiceHost>> _actions;
 
         public ServiceHostProvider(
             IBaseAddressProvider baseAddresses,
@@ -30,8 +31,12 @@ namespace Solid.AspNetCore.Extensions.Wcf.Providers
         {
             _baseAddresses = baseAddresses;
             _factory = factory ?? _defaultFactory;
-            _behaviors = globalBehaviors.Concat(instanceBehaviors.Select(b => b.Behavior)).ToList();
+            _behaviors = globalBehaviors
+                .Concat(instanceBehaviors.Select(b => b.Behavior))
+                .OrderByDescending(b => b.GetType().Namespace.StartsWith("System") || b.GetType().Namespace.StartsWith("Microsoft"))
+                .ToList();
             _provider = provider;
+            _actions = new List<Action<ServiceHost>>();
 
             _lazyHost = new Lazy<ServiceHost>(Initialize, LazyThreadSafetyMode.ExecutionAndPublication);
         }
@@ -45,9 +50,17 @@ namespace Solid.AspNetCore.Extensions.Wcf.Providers
             if(typeof(TService).GetServiceLifetime() == ServiceLifetime.Singleton)
                 singleton = _provider.GetService<TService>();
             var host = _factory(_provider, singleton, typeof(TService), baseAddresses);
+
             foreach (var behavior in _behaviors)
                 host.Description.Behaviors.Add(behavior);
+            foreach (var action in _actions)
+                action(host);
             return host;
+        }
+
+        public void AddStartupAction(Action<ServiceHost> action)
+        {
+            _actions.Add(action);
         }
 
         static readonly ServiceHostFactoryDelegate<TService> _defaultFactory = (provider, singleton, type, baseAddresses) =>
