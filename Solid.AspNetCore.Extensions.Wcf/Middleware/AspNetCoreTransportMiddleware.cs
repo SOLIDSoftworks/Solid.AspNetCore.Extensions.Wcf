@@ -43,7 +43,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Middleware
                     }
                     catch (Exception ex)
                     {
-
+                        _logger.LogCritical(ex, "Could not start host");
                     }
                 }
 
