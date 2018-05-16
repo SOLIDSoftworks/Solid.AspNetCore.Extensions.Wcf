@@ -53,16 +53,20 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
                 property = message.Properties["httpResponse"] as HttpResponseMessageProperty;
 
             if (property != null)
+            {
                 response.StatusCode = (int)property.StatusCode;
+                foreach (var key in property.Headers.Keys.Cast<string>())
+                {
+                    var value = property.Headers[key];
+                    response.Headers.Add(key, value);
+                }
+            }
             else if (message.IsFault)
-                response.StatusCode = 500;            
+            {
+                response.StatusCode = 500;
+            }
             var encoder = GetMessageEncoder();
 
-            foreach(var key in property.Headers.Keys.Cast<string>())
-            {
-                var value = property.Headers[key];
-                response.Headers.Add(key, value);
-            }
 
             SanitizeMessage(message, encoder.MessageVersion);
 

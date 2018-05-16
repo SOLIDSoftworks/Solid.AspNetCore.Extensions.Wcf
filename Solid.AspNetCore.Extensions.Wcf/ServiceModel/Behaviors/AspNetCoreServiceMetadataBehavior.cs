@@ -70,7 +70,6 @@ namespace Solid.AspNetCore.Extensions.Wcf.Behaviors
                 var transport = custom.Elements.OfType<TransportBindingElement>().First();
                 var parameters = _bindingParameters.GetOrAdd(url, key => new BindingParameterCollection());
 
-
                 var context = new BindingContext(custom, parameters, url, string.Empty, ListenUriMode.Explicit);
                 var listener = transport.BuildChannelListener<IReplyChannel>(context) as AspNetCoreChannelListener;
                 listener.IsGet = true;
