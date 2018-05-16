@@ -28,6 +28,8 @@ namespace Solid.AspNetCore.Extensions.Wcf.Factories
                 message = new NullMessage();
             if (message.Headers.To == null)
                 message.Headers.To = request.GetRequestUri();
+            if (message.Properties.Via == null)
+                message.Properties.Via = request.GetRequestUri();
             if (message.Headers.Action == null)
                 message.Headers.Action = request.Headers["SOAPAction"].Select(s => s.Trim('"')).FirstOrDefault();
 

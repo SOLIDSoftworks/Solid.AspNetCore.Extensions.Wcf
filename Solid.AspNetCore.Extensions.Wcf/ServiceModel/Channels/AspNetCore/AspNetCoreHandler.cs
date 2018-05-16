@@ -61,8 +61,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
             var path = url.AbsolutePath;
             if (path.Length > 1)
                 path = path.TrimEnd('/');
-            var query = url.Query;
-            return new Uri(path + query, UriKind.Relative);
+            return new Uri(path, UriKind.Relative);
         }
 
         private string GenerateKey(string method, Uri url)

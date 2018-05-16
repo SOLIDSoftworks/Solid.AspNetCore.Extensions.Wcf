@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Simple.Services
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, IncludeExceptionDetailInFaults = true)]
     public class EchoWcfService : IEchoContract
     {
         private IEchoService _service;

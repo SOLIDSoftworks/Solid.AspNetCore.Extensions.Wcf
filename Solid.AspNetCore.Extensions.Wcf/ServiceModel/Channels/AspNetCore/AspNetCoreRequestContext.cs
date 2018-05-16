@@ -48,14 +48,26 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
         public override async Task ReplyAsync(Message message, TimeSpan timeout)
         {
             var response = _http.Response;
-            if (message.IsFault)
-                response.StatusCode = 500;
-            
+            var property = null as HttpResponseMessageProperty;
+            if (message.Properties.ContainsKey("httpResponse"))
+                property = message.Properties["httpResponse"] as HttpResponseMessageProperty;
+
+            if (property != null)
+                response.StatusCode = (int)property.StatusCode;
+            else if (message.IsFault)
+                response.StatusCode = 500;            
             var encoder = GetMessageEncoder();
+
+            foreach(var key in property.Headers.Keys.Cast<string>())
+            {
+                var value = property.Headers[key];
+                response.Headers.Add(key, value);
+            }
 
             SanitizeMessage(message, encoder.MessageVersion);
 
-            response.ContentType = encoder.MediaType;
+            if(response.ContentType == null)
+                response.ContentType = encoder.MediaType;
 
             encoder.WriteMessage(message, response.Body);
             await Channel.ReplyAsync(_http);

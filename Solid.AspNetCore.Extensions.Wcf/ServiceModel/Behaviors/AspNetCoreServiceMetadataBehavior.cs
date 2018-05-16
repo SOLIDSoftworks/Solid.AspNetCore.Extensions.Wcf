@@ -1,4 +1,5 @@
 ﻿using Solid.AspNetCore.Extensions.Wcf.Abstractions;
+using Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -35,7 +36,10 @@ namespace Solid.AspNetCore.Extensions.Wcf.Behaviors
             {
                 var parameters = _bindingParameters.GetOrAdd(endpoint.Address.Uri, url => new BindingParameterCollection());
                 foreach (var parameter in bindingParameters)
-                    parameters.Add(parameter);
+                {
+                    if(!parameters.Contains(parameter.GetType()))
+                        parameters.Add(parameter);
+                }
             }
         }
 
@@ -45,55 +49,65 @@ namespace Solid.AspNetCore.Extensions.Wcf.Behaviors
             {
                 var dispatcher = serviceHostBase.ChannelDispatchers[i] as ChannelDispatcher;
                 if (dispatcher == null) continue;
-                if (!dispatcher.BindingName.StartsWith("ServiceMetadata")) continue;
 
-                //var url = dispatcher.Listener.Uri;
-                //var binding = null as Binding;
-                //if (url.Scheme == "http")
-                //    binding = new BasicHttpBinding();
-                //else if (url.Scheme == "https")
-                //    binding = new BasicHttpsBinding();
+                if (!UsesDefaultHttpListener(dispatcher)) continue;
+
+                var url = dispatcher.Listener.Uri;
+                var binding = null as Binding;
+                if (url.Scheme == "http")
+                    binding = new BasicHttpBinding();
+                else if (url.Scheme == "https")
+                    binding = new BasicHttpsBinding();
 
                 serviceHostBase.ChannelDispatchers.RemoveAt(i);
 
-                //if (binding == null) continue;
+                if (binding == null) continue;
 
-                //binding.Name = $"AspNetCore{dispatcher.BindingName}";
-                //var custom = _sanitizer.SanitizeBinding(binding) as CustomBinding;
-                //var encoding = custom.Elements.OfType<MessageEncodingBindingElement>().First();
-                //encoding.MessageVersion = MessageVersion.None;
-                //var transport = custom.Elements.OfType<TransportBindingElement>().First();
-                //var parameters = _bindingParameters.GetOrAdd(url, key => new BindingParameterCollection());
-                //var context = new BindingContext(custom, parameters, url, string.Empty, ListenUriMode.Explicit);
-                //var listener = transport.BuildChannelListener<IReplyChannel>(context) as AspNetCoreChannelListener;
-                //listener.IsGet = true;
-                
-                //var replacement = new ChannelDispatcher(listener, custom.Name, custom);
+                binding.Name = $"AspNetCore{dispatcher.BindingName}";
+                var custom = _sanitizer.SanitizeBinding(binding) as CustomBinding;
+                var encoding = custom.Elements.OfType<MessageEncodingBindingElement>().First();
+                encoding.MessageVersion = MessageVersion.None;
+                var transport = custom.Elements.OfType<TransportBindingElement>().First();
+                var parameters = _bindingParameters.GetOrAdd(url, key => new BindingParameterCollection());
 
-                //foreach(var endpoint in dispatcher.Endpoints)
-                //    replacement.Endpoints.Add(Copy(endpoint));
 
-                //replacement.MessageVersion = encoding.MessageVersion;
-                //serviceHostBase.ChannelDispatchers.Add(replacement);
+                var context = new BindingContext(custom, parameters, url, string.Empty, ListenUriMode.Explicit);
+                var listener = transport.BuildChannelListener<IReplyChannel>(context) as AspNetCoreChannelListener;
+                listener.IsGet = true;
+
+                var replacement = new ChannelDispatcher(listener, custom.Name, custom);
+
+                foreach (var endpoint in dispatcher.Endpoints)
+                    replacement.Endpoints.Add(Copy(endpoint));
+
+                replacement.MessageVersion = encoding.MessageVersion;
+                serviceHostBase.ChannelDispatchers.Add(replacement);
             }
+        }
+
+        private bool UsesDefaultHttpListener(ChannelDispatcher dispatcher)
+        {
+            if (dispatcher.Listener == null) return false;
+            var type = dispatcher.Listener.GetType();
+            return type.FullName.StartsWith("System.ServiceModel.Channels.HttpChannelListener");
         }
 
         public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
         {
         }
 
-        //private EndpointDispatcher Copy(EndpointDispatcher endpoint)
-        //{
-        //    var copied = new EndpointDispatcher(endpoint.EndpointAddress, endpoint.ContractName, endpoint.ContractNamespace, endpoint.IsSystemEndpoint);
+        private EndpointDispatcher Copy(EndpointDispatcher endpoint)
+        {
+            var copied = new EndpointDispatcher(endpoint.EndpointAddress, endpoint.ContractName, endpoint.ContractNamespace, endpoint.IsSystemEndpoint);
 
-        //    copied.FilterPriority = endpoint.FilterPriority;
-        //    copied.ContractFilter = endpoint.ContractFilter;
-        //    copied.AddressFilter = endpoint.AddressFilter;
+            copied.FilterPriority = endpoint.FilterPriority;
+            copied.ContractFilter = endpoint.ContractFilter;
+            copied.AddressFilter = endpoint.AddressFilter;
 
-        //    var field = typeof(EndpointDispatcher).GetField("dispatchRuntime", BindingFlags.Instance | BindingFlags.NonPublic);
-        //    field.SetValue(copied, endpoint.DispatchRuntime);
+            var field = typeof(EndpointDispatcher).GetField("dispatchRuntime", BindingFlags.Instance | BindingFlags.NonPublic);
+            field.SetValue(copied, endpoint.DispatchRuntime);
 
-        //    return copied;
-        //}
+            return copied;
+        }
     }
 }
