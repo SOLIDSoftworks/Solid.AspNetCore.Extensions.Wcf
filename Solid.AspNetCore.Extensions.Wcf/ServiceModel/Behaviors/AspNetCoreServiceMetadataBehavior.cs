@@ -88,7 +88,9 @@ namespace Solid.AspNetCore.Extensions.Wcf.Behaviors
         {
             if (dispatcher.Listener == null) return false;
             var type = dispatcher.Listener.GetType();
-            return type.FullName.StartsWith("System.ServiceModel.Channels.HttpChannelListener");
+            return 
+                type.FullName.StartsWith("System.ServiceModel.Channels.HttpChannelListener") ||
+                type.FullName.StartsWith("System.ServiceModel.Channels.HttpsChannelListener");
         }
 
         public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
