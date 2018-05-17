@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
 {
-    internal class AspNetCoreTransportBindingElement : TransportBindingElement
+    internal class AspNetCoreTransportBindingElement : HttpTransportBindingElement
     {
         internal IMessageFactory MessageFactory { get; }
 
@@ -26,21 +26,16 @@ namespace Solid.AspNetCore.Extensions.Wcf.ServiceModel.Channels.AspNetCore
             _loggerFactory = loggerFactory;
         }
 
-        protected AspNetCoreTransportBindingElement(string scheme, IAspNetCoreHandler handler, IMessageFactory factory, ILoggerFactory loggerFactory, TransportBindingElement elementToBeCloned) 
-            : base(elementToBeCloned)
-        {
-            Scheme = scheme;
-            Handler = handler;
-            MessageFactory = factory;
-
-            _loggerFactory = loggerFactory;
-        }
-
         public override string Scheme { get; }
 
         public override BindingElement Clone()
         {
-            return new AspNetCoreTransportBindingElement(Scheme, Handler, MessageFactory, _loggerFactory, this);
+            return new AspNetCoreTransportBindingElement(Scheme, Handler, MessageFactory, _loggerFactory);
+        }
+
+        public override bool CanBuildChannelFactory<TChannel>(BindingContext context)
+        {
+            return false;
         }
 
         public override bool CanBuildChannelListener<TChannel>(BindingContext context)

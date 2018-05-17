@@ -32,7 +32,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Factories
                 message.Properties.Via = request.GetRequestUri();
             if (message.Headers.Action == null)
                 message.Headers.Action = request.Headers["SOAPAction"].Select(s => s.Trim('"')).FirstOrDefault();
-
+            
             return Task.FromResult(message);
         }
 

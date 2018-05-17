@@ -4,7 +4,9 @@ using Solid.Testing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,11 +15,14 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests
     public class BehaviorTestFixture : IDisposable
     {
         private IInstanceTestService _singleton;
-
+        static BehaviorTestFixture()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        }
         public BehaviorTestFixture()
         {
             TestingServer = new TestingServerBuilder()
-                .AddAspNetCoreHostFactory()
+                .AddAspNetCoreHostFactory(Scheme.Https)
                 .AddStartup<BehaviorTestStartup>()
                 .Build();
         }
@@ -29,7 +34,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests
             if (_singleton == null)
             {
                 var url = new Uri(TestingServer.BaseAddress, "singleton");
-                var binding = new WS2007HttpBinding(SecurityMode.Message);
+                var binding = new WS2007HttpBinding(SecurityMode.TransportWithMessageCredential);                
                 binding.Security.Message.ClientCredentialType = MessageCredentialType.UserName;
                 binding.Security.Message.EstablishSecurityContext = false;
                 var endpoint = new EndpointAddress(url);

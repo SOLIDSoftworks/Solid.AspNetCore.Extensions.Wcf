@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Net.Security;
 using System.ServiceModel;
@@ -31,8 +32,19 @@ namespace Simple
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseWcfService<EchoWcfService, IEchoContract>("/wcf/echo");
+            app.UseWcfService<EchoWcfService>("/wcf/echo", builder =>
+            {
+                builder.AddServiceEndpoint<IEchoContract>(CreateBinding());
+            });
             app.UseMvc();
         }
+
+        private Binding CreateBinding()
+        {
+            var binding = new WS2007HttpBinding(SecurityMode.TransportWithMessageCredential);
+            binding.Security.Message.EstablishSecurityContext = false;
+            return binding;
+        }
+
     }
 }

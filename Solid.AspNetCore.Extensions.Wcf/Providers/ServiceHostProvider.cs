@@ -6,6 +6,7 @@ using System.ServiceModel.Description;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Solid.AspNetCore.Extensions.Wcf.Abstractions;
 using Solid.AspNetCore.Extensions.Wcf.Builders;
@@ -45,6 +46,9 @@ namespace Solid.AspNetCore.Extensions.Wcf.Providers
 
         private ServiceHost Initialize()
         {
+            var config = _provider.GetService<IConfiguration>();
+            var https = config["HTTPS_PORT"] != null;
+
             var baseAddresses = _baseAddresses.GetBaseAddressesFor<TService>();
             var singleton = default(TService);
             if(typeof(TService).GetServiceLifetime() == ServiceLifetime.Singleton)

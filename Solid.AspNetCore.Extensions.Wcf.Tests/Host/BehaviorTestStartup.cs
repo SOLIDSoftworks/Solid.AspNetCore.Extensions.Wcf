@@ -30,7 +30,7 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests.Host
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var binding = new WS2007HttpBinding(SecurityMode.Message);
+            var binding = new WS2007HttpBinding(SecurityMode.TransportWithMessageCredential);
             binding.Security.Message.ClientCredentialType = MessageCredentialType.UserName;
             binding.Security.Message.EstablishSecurityContext = false;
             services.AddLogging(builder =>
@@ -42,7 +42,14 @@ namespace Solid.AspNetCore.Extensions.Wcf.Tests.Host
             services.AddSingleton<UserNamePasswordValidator>(MockUserNamePasswordValidator.Object);
             services.AddSingleton<IServiceBehavior, UserNamePasswordValidatorBehavior>();
             services.AddSingleton<IServiceBehavior, OutputBehavior>();
-            services.AddWcfServiceWithMetadata<SingletonService>().AddDefaultBinding(binding);
+            services
+                .AddWcfService<SingletonService>(wcf => 
+                    wcf.WithServiceMetadataBehavior(behavior =>
+                    {
+                        behavior.HttpsGetEnabled = true;
+                        behavior.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
+                    }))
+                .AddDefaultBinding(binding);
         }
 
         public void Configure(IApplicationBuilder builder)
